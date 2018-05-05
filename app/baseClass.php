@@ -14,7 +14,7 @@ class baseClass {
 
 		$this->db_server = 'localhost';
 		$this->db_user     = 'root';
-		$this->db_pass     = 'toor';
+		$this->db_pass     = 'root';
 		$this->db_database = 'cep';		
 
 		$this->_connect();
