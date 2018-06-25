@@ -24,7 +24,6 @@ class baseClass {
 			$this->_execAction($action);
 		}
 
-
 	}
 
 
@@ -76,7 +75,6 @@ class baseClass {
 
 
 	public function _select_fetch_all($sql){
-	
 		return $this->_fetch_all($this->_select($sql));
 	}
 
@@ -141,6 +139,27 @@ class baseClass {
 				'msg' => utf8_encode("Ação inválida: '$action'")
 			));
 		}
+	}
+
+
+	/******************************
+	 * Criado por: Leonardo F Costa
+	 * Data: 24/05/2018
+	 * Objetivo: Persistir dados no banco de dados
+	 *****************************/
+	public function insert($sql) {
+
+		$resultado = mysqli_query($this->conn,$sql);
+
+		if ($resultado) 
+		{
+			return mysqli_insert_id();
+		}
+		else
+		{
+			return $resultado;
+		}
+
 	}
 
 }
