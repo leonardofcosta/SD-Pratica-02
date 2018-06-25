@@ -52,3 +52,46 @@ function validaCPF($cpf = null) {
     }
 }
 
+/****************************************
+ * Adicionada em 16/06/2018
+ *
+ * Objetivo: Retornar o nome do estado
+ *
+ * Parametro: Informa a sigla do estado
+ * Retorno: String
+ ****************************************/
+function nomeEstado($uf) {
+
+    $descEstados = array( 
+
+    "AC" => "Acre",
+    "AL" => "Alagoas",
+    "AP" => "Amapá",
+    "AM" => "Amazonas",
+    "BA" => "Bahia",
+    "CE" => "Ceará",
+    "DF" => "Distrito Federal",
+    "ES" => "Espírito Santo",
+    "GO" => "Goiás",
+    "MA" => "Maranhão",
+    "MT" => "Mato Grosso",
+    "MS" => "Mato Grosso do Sul",
+    "MG" => "Minas Gerais",
+    "PA" => "Pará",
+    "PB" => "Paraíba",
+    "PR" => "Paraná",
+    "PE" => "Pernambuco",
+    "PI" => "Piauí",
+    "RJ" => "Rio de Janeiro",
+    "RN" => "Rio Grande do Norte",
+    "RS" => "Rio Grande do Sul",
+    "RO" => "Rondônia",
+    "RR" => "Roraima",
+    "SC" => "Santa Catarina",
+    "SP" => "São Paulo",
+    "SE" => "Sergipe",
+    "TO" => "Tocantins"
+    );
+
+    return $descEstados[$uf];
+}
