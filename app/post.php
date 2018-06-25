@@ -8,35 +8,60 @@ if (!validaCPF($_POST["cpf"])) {
 else
 {
 	$data = (object) ($_POST);
-
+    
+	// Efetua conecxão com base de dados
 	$mysqli = new mysqli("localhost", "root", "root", "trabalho_sd");
 
-	$mysqli->begin_transaction();
 	$mysqli->set_charset("utf8");
 
-	/* check connection */
+	// Verifica conexão 
 	if ($mysqli->connect_errno) {
 	    printf("Connect failed: %s\n", $mysqli->connect_error);
 	    exit();
 	}
+	
+	// Inicia transação
+	$mysqli->begin_transaction();
 
-	/* Verifica se UF já existe na base */
+	// Tratativa para evitar ataques de SQL Injection
+	$uf        = $mysqli->real_escape_string($data->uf);
+	$cep       = $mysqli->real_escape_string($data->cep);
+	$cidade    = $mysqli->real_escape_string($data->cidade);
+	$bairro    = $mysqli->real_escape_string($data->bairro);
+	$logradouro= $mysqli->real_escape_string($data->logradouro);
+	$cpf       = $mysqli->real_escape_string($data->cpf);
+	$nome      = $mysqli->real_escape_string($data->nome);
+	$email     = $mysqli->real_escape_string($data->email);
+	$telefone  = $mysqli->real_escape_string($data->telefone);
+	$celular   = $mysqli->real_escape_string($data->celular);
+	
+	
+	// Verifica se UF já existe na base
 	$sql = "select id from uf u where u.sigla = ?";
-
+    
+	// Prepara uma instrução SQL para execução
 	if ($stmt = $mysqli->prepare($sql))
 	{
-		$stmt->bind_param("s", $data->uf);
-		$stmt->execute();
+	    // Vincula variáveis a uma instrução preparada como parâmetros
+	    $stmt->bind_param("s", $uf);
+		
+	    // Executa uma consulta preparada
+	    $stmt->execute();
+		
+	    // Vincula variáveis a uma instrução preparada para armazenamento de resultados
 		$stmt->bind_result($id_uf);
+		
+		// Buscar resultados de um comando preparado nas variáveis ligadas
 		$stmt->fetch();
 
+		// Fecha um comando preparado
 		$stmt->close();
 	}
 
 	/* Se não existe UF faz o insert */
 	if (!isset($id_uf))
 	{
-		$sql = "insert into uf (sigla, descricao) values ('".$data->uf."', '".nomeEstado($data->uf)."')";
+	    $sql = "insert into uf (sigla, descricao) values ('".$uf."', '".nomeEstado($uf)."')";
 
 		if ($result = $mysqli->query($sql))
 		{
@@ -59,18 +84,18 @@ else
 
 	if ($stmt = $mysqli->prepare($sql))
 	{
-		$stmt->bind_param("s", $data->cep);
+		$stmt->bind_param("s", $cep);
 		$stmt->execute();
-		$stmt->bind_result($id);
+		$stmt->bind_result($id_cidade);
 		$stmt->fetch();
 
 		$stmt->close();
 	}
 
-	if (!isset($id))
+	if (!isset($id_cidade))
 	{
 		/* insert da Cidade */
-		$sql = "insert into cidade (cep, id_uf, descricao) values ('".$data->cep."', $retInsertUF, '".$data->cidade."')";
+		$sql = "insert into cidade (cep, id_uf, descricao) values ('".$cep."', $retInsertUF, '".$cidade."')";
 
 		if ($result = $mysqli->query($sql))
 		{
@@ -85,19 +110,15 @@ else
 	} 
 	else 
 	{
-		$retInsertCidade = $id;
+		$retInsertCidade = $id_cidade;
 	}
     
-	/**
-	 * 
-	 * Verifica se já existe o bairro cadastrado em determinada cidade
-	 * 
-	 */
+	// Verifica se já existe o bairro cadastrado em determinada cidade
 	$sql = "select id from bairro b where b.id_cidade = ? and b.descricao = ?";
 	
 	if ($stmt = $mysqli->prepare($sql))
 	{
-	    $stmt->bind_param("is", $retInsertCidade, $data->bairro);
+	    $stmt->bind_param("is", $retInsertCidade, $bairro);
 	    $stmt->execute();
 	    $stmt->bind_result($id_bairro);
 	    $stmt->fetch();
@@ -108,7 +129,7 @@ else
 	// se não existir o id do bairro faz o insert, caso contrário popula variavel $retInsertBairro com o id bairro encontrada.
 	if (!isset($id_bairro)) {
     	/* Faz o insert do Bairro */
-    	$sql = "insert into bairro (id_cidade, descricao) values ($retInsertCidade, '".$data->bairro."')";
+    	$sql = "insert into bairro (id_cidade, descricao) values ($retInsertCidade, '".$bairro."')";
     
     	if ($result = $mysqli->query($sql))
     	{
@@ -146,8 +167,8 @@ else
     			 logradouro) 
     			values 
     			($retInsertBairro, 
-    			 '".$data->cep."', 
-    			 '".$data->logradouro."')";
+    			 '".$cep."', 
+    			 '".$logradouro."')";
     	
     	if ($result = $mysqli->query($sql))
     	{
@@ -175,19 +196,15 @@ else
 			 id_cidade, 
 			 id_endereco) 
 			values 
-			('".$data->cpf."', 
-			 '".$data->nome."', 
-			 '".$data->email."', 
-			 '".$data->telefone."', 
-			 '".$data->celular."', 
+			('".$cpf."', 
+			 '".$nome."', 
+			 '".$email."', 
+			 '".$telefone."', 
+			 '".$celular."', 
 			 $retInsertCidade, 
 			 $retInsertEndereco)";
 	
-	if ($result = $mysqli->query($sql))
-	{
-		$retInsertCliente = $mysqli->insert_id;
-	}
-	else 
+	if (!$result = $mysqli->query($sql)) 
 	{
 		echo "cpf " .$data->cpf. " já cadastrado";
 		echo "<br /><br />";
