@@ -39,7 +39,7 @@ class endereco extends baseClass {
         LEFT  JOIN cep.endereco e ON b.bairro_codigo = e.bairro_codigo
         INNER JOIN cep.uf u       ON u.uf_codigo = c.uf_codigo
 
-        WHERE (ifnull(e.endereco_cep,c.cidade_cep) LIKE '%$term%') OR (c.cidade_descricao like '%$term%')
+        WHERE (ifnull(e.endereco_cep,c.cidade_cep) LIKE '$term%') OR (c.cidade_descricao like '%$term%')
 
         ORDER BY
         c.cidade_descricao,
