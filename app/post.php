@@ -3,14 +3,14 @@
 include('utils/funcUtils.php');
 
 if (!validaCPF($_POST["cpf"])) {
-	header("Location: erro.php");
+	header("Location: ../erro.html");
 }
 else
 {
 	$data = (object) ($_POST);
     
 	// Efetua conecxão com base de dados
-	$mysqli = new mysqli("localhost", "root", "root", "trabalho_sd");
+	$mysqli = new mysqli("127.0.0.1", "root", "root", "trabalho_sd");
 
 	$mysqli->set_charset("utf8");
 
@@ -216,8 +216,8 @@ else
 	$mysqli->commit();
 	$mysqli->close();
 
-	echo "inserção ok";
-
+	header("Location: ../sucesso.html");
+	
 }
 
 

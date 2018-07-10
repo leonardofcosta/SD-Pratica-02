@@ -7,13 +7,13 @@ class endereco extends baseClass {
     // Lista de métodos disponíveis nesta classe
     protected $actions = array(
         'get_endereco',
-        'get_endereco_cidade'
+        'get_endereco_cidade',
+        'get_endereco_ws'
     );
 
     // Recebe o CEP como parâmetro
     // Retorna dados de endereço
     public function get_endereco(){
-
 
         $data = (object) $_GET;
 
@@ -106,7 +106,41 @@ class endereco extends baseClass {
         echo json_encode($result);
 
     }
+    
+    
+    // Recebe o CEP como parâmetro
+    // Retorna dados de endereço
+    public function get_endereco_ws() {
+        
+        try {
+            $data = (object) $_GET; 
+            
+            // 1 forma de fazer 
+            //$result = file_get_contents("http://177.105.40.87/ws-cep/public/api/endereco/cp/".$data->term);
+            
+            // 2 forma de fazer
+            // Inicializa uma sessão cURL
+            $curl = curl_init("http://177.105.40.87/ws-cep/public/api/endereco/cep/".$data->term);
+            
+            
+            curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+            
+            // Executa a sessão cURL
+            $result = curl_exec($curl);
+            
+            // Fecha uma sessão cURL
+            curl_close($curl);
+            
+            // Retorna os dados em formato JSON
+            echo $result;
+            
+        } catch (Exception $e) {
+            echo "Erro ao consultar cep (ws): " . $e->getMessage();
+        }
+        
+    }
 
 }
 
 $endereco = new endereco($_GET['_action']);
+

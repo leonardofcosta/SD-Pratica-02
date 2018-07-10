@@ -12,7 +12,7 @@ class baseClass {
 	
 	public function __construct($action=null){
 
-		$this->db_server = 'localhost';
+		$this->db_server = '127.0.0.1';
 		$this->db_user     = 'root';
 		$this->db_pass     = 'root';
 		$this->db_database = 'cep';		
